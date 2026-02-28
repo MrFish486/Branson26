@@ -19,11 +19,9 @@ for ($i = 0; $i < count($content); $i ++) {
 	$line = $content[$i];
 	if (explode(",", $line)[0] == $username) {
 		$found = true;
-		$color = str_replace("\n", "", explode(",", $line)[4]);
-		$content[$i] = sprintf("%s,%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z'], $color);
-	} else if (substr_count($line, ",") == 4) {
-		error_log(sprintf("SSC=%d,l='%s'", substr_count($line, ","), $line));
-		array_push($product, $line/* . (($i == count($content) - 1) ? "" : "\n")*/);
+		$content[$i] = sprintf("%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z']);
+	} else if (count(explode(",", $line)) > 3) {
+		array_push($product, $line . (($i == count($content) - 1) ? "" : "\n"));
 	}
 }
 
@@ -41,11 +39,12 @@ $cc = count($product) - 2;
 for ($i = 0; $i < count($product); $i ++) {
 	$line = $product[$i];
 	$dat = explode(",", $line);
-	if (count($dat) < 2) {
+	error_log(sprintf("%d / %d", $i, count($product)));
+	if (count($dat) < 4) {
 		$cc --;
 		continue;
 	}
-	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s,"color":"%s"}%s', $dat[0], $dat[1], $dat[2], $dat[3], $dat[4], ($i >= $cc) ? "" : ",");
+	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s}%s', $dat[0], $dat[1], $dat[2], $dat[3], ($i >= $cc) ? "" : ",");
 }
 
 echo ']}';
