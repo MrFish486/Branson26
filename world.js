@@ -57,7 +57,7 @@ rapier.init().then(async () => {
 		let vel=playerBody.linvel()
 		playerMesh.position.set(pos.x,pos.y,pos.z)
 		
-		let opp = await fetch(`/move.php?x=${pos.x}&y=${pos.y}&z=${pos.z}&name=${name}`);
+/*		let opp = await fetch(`/move.php?x=${pos.x}&y=${pos.y}&z=${pos.z}&name=${name}`);
 
 		let dat = await opp.json();
 		
@@ -72,7 +72,7 @@ rapier.init().then(async () => {
 			let pn = players[i].name;
 			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0x00FF00}))
 			newPlayer.position.set(px,py,pz)
-		}
+		}*/
 
 		//name.php returns own name
 		//move.php sets your position (given name, x, y, and z), and returns the position of everybody else

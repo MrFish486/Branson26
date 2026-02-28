@@ -20,7 +20,7 @@ for ($i = 0; $i < count($content); $i ++) {
 	if (explode(",", $line)[0] == $username) {
 		$found = true;
 		$content[$i] = sprintf("%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z']);
-	} else if ($line != "") {
+	} else if (count(explode(",", $line)) > 3) {
 		array_push($product, $line . (($i == count($content) - 1) ? "" : "\n"));
 	}
 }
@@ -34,14 +34,17 @@ file_put_contents($users_index, implode("\n", $content));
 
 echo '{"success":true,"reason":"","users":[';
 
-$i = 1;
+$cc = count($content) - 2;
 
-foreach ($content as $line) {
+for ($i = 0; $i < count($content); $i ++) {
+	$line = $content[$i];
 	$dat = explode(",", $line);
-	if (count($dat) < 4) break;
-	$i ++;
 	error_log(sprintf("%d / %d", $i, count($content)));
-	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s}%s', $dat[0], $dat[1], $dat[2], $dat[3], ($i == count($content)) ? "" : ",");
+	if (count($dat) < 4) {
+		$cc --;
+		continue;
+	}
+	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s}%s', $dat[0], $dat[1], $dat[2], $dat[3], ($i >= $cc) ? "" : ",");
 }
 
 echo ']}';
