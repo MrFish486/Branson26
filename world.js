@@ -33,7 +33,7 @@ rapier.init().then(async () => {
 	camera.position.set(3, 3, 3)
 	
 	scene.add(light,Alight)
-
+	const textureLoader=new three.TextureLoader('assets/noai.png')
 	const groundMesh=new three.Mesh(new three.BoxGeometry(20,1,20))
 	scene.add(groundMesh)
 
