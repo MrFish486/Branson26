@@ -16,7 +16,7 @@ body {
 	position: absolute;
 	left: 10px;
 	bottom: 10px;
-	transition: 1s;
+	transition: 0.7s;
 }
 
 .footer:hover {

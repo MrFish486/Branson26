@@ -13,7 +13,7 @@ if (strlen($username) > 32) {
 
 include('include/user_index.php');
 $c = file_get_contents($users_index);
-$c .= sprintf("%s,0,0,0\n", $username);
+$c .= sprintf("%s,0,10,0\n", $username);
 file_put_contents($users_index, $c);
 
 session_start();
