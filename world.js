@@ -4,7 +4,11 @@ import * as three from 'https://esm.sh/three'
 
 
 rapier.init().then(async () => {
-
+	window.addEventListener("beforeunload", async () => {
+		await fetch(`/remove.php?name=${name}`);
+	})
+	let otplayers=[]
+	let jumpTime=true 
 	//init world, player
 	const world = new rapier.World({x:0,y:-9.81,z:0})
 	const ground=rapier.ColliderDesc.cuboid(10,2,10)
@@ -53,11 +57,31 @@ rapier.init().then(async () => {
 	const name = (await n.json()).name;
 
 	async function animate (){
+		otplayers.forEach(p => {
+			scene.remove(p)
+		})
+		otplayers=[]
 		let pos= playerBody.translation()
+		let rayStart= { x: pos.x, y: pos.y, z: pos.z }
+		rayStart.y-=1
+		let ray= new rapier.Ray(rayStart,{ x: 0, y: -1, z: 0 })
+		let hit= world.castRay(ray,0.3,true,undefined,undefined,playerBody)
+		if (keys.has('Space')&&hit){
+                playerBody.setLinvel({x:0,y:10,z:-4},true)
+                jumpTime=false
+                let q=setInterval(()=>{
+                    if (playerBody.linvel().y<=0){
+                        clearInterval(q)
+                        jumpTime=true
+
+                    }
+                },1)
+                
+            }
 		let vel=playerBody.linvel()
 		playerMesh.position.set(pos.x,pos.y,pos.z)
 		
-/*		let opp = await fetch(`/move.php?x=${pos.x}&y=${pos.y}&z=${pos.z}&name=${name}`);
+		let opp = await fetch(`/move.php?x=${pos.x}&y=${pos.y}&z=${pos.z}&name=${name}`);
 
 		let dat = await opp.json();
 		
@@ -72,7 +96,11 @@ rapier.init().then(async () => {
 			let pn = players[i].name;
 			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0x00FF00}))
 			newPlayer.position.set(px,py,pz)
-		}*/
+			scene.add(newPlayer)
+			
+			otplayers.push(newPlayer)
+			console.log(pn);
+		}
 
 		//name.php returns own name
 		//move.php sets your position (given name, x, y, and z), and returns the position of everybody else
@@ -84,10 +112,11 @@ rapier.init().then(async () => {
 		if (keys.has('KeyD')) vell.x += 5;
 		if (keys.has('KeyW')) vell.z -= 5;
 		if (keys.has('KeyS')) vell.z += 5;
-		if (keys.has())
 		
 		playerBody.setLinvel({x:vell.x,y:vell.y,z:vell.z},true)
+		if (pos.y<-5) playerBody.setTranslation({x:0,y:10,z:0})
 
+		
 		requestAnimationFrame(animate)
 		//write player code above this request
 		camera.position.set(pos.x, pos.y + 2, pos.z + 3)
