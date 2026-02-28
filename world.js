@@ -12,9 +12,26 @@ rapier.init().then(async () => {
 	let jumpTime=true 
 	//init world, player
 	const world = new rapier.World({x:0,y:-9.81,z:0})
-	const ground=rapier.ColliderDesc.cuboid(10,2,10)
+	const ground=rapier.ColliderDesc.cuboid(20,2,20)
 	world.createCollider(ground)
+	
+	const wall1=rapier.ColliderDesc.cuboid(20,10,1)
+	wall1.setTranslation(0,0,20)
 
+	const wall2=rapier.ColliderDesc.cuboid(20,10,1)
+	wall2.setTranslation(0,0,-20)
+
+	const wall3=rapier.ColliderDesc.cuboid(1,10,20)
+	wall3.setTranslation(-20,0,0)
+
+	const wall4=rapier.ColliderDesc.cuboid(1,10,20)
+	wall4.setTranslation(20,0,0)
+
+	world.createCollider(wall1)
+	world.createCollider(wall2)
+	world.createCollider(wall3)
+	world.createCollider(wall4)
+	
 	const playerDesc= rapier.RigidBodyDesc.dynamic()
 	playerDesc.setTranslation(0,10,0)
 	const playerBody= world.createRigidBody(playerDesc)
@@ -34,9 +51,9 @@ rapier.init().then(async () => {
 	
 	scene.add(light,Alight)
 	const textureLoader=new three.TextureLoader()
-	const texture=textureLoader.load('assets/noai.png')
+	const texture=textureLoader.load('/assets/floor.png')
 	const mat=new three.MeshBasicMaterial({map:texture})
-	const groundMesh=new three.Mesh(new three.BoxGeometry(20,1,20),mat)
+	const groundMesh=new three.Mesh(new three.BoxGeometry(40,1,40),mat)
 	scene.add(groundMesh)
 
 	var keys=new Set()
@@ -70,7 +87,8 @@ rapier.init().then(async () => {
 		let rayStart= { x: pos.x, y: pos.y, z: pos.z }
 		rayStart.y-=1
 		let ray= new rapier.Ray(rayStart,{ x: 0, y: -1, z: 0 })
-		let hit= world.castRay(ray,0.3,true,undefined,undefined,playerBody)
+		let hit= world.castRay(ray,0.05,true,undefined,undefined,playerBody)
+		console.log(hit)
 		if (keys.has('Space')&&hit){
                 playerBody.setLinvel({x:0,y:10,z:-4},true)
                 jumpTime=false
@@ -82,19 +100,20 @@ rapier.init().then(async () => {
                     }
                 },1)
                 
-            }
+        }
 		let vel=playerBody.linvel()
 		playerMesh.position.set(pos.x,pos.y,pos.z)
 		
 		let opp = await fetch(`/move.php?x=${pos.x}&y=${pos.y}&z=${pos.z}&name=${name}`);
 
 		let dat = await opp.json();
-		
-		//if (!opp.success) window.location.href = "/invalid.php";
 
 		let players = dat.users;
-	
-		if (players == undefined) console.log(dat, name)
+
+		//console.log(dat,name)
+
+		if (!dat.success || players == undefined) window.location.href = "/invalid.php";
+
 
 		for (let i = 0; i < players.length; i ++) {
 			let px = players[i].x;
