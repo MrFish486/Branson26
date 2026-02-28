@@ -13,8 +13,9 @@ $content = file_get_contents($messages_index);
 
 echo '{"success":true,"reason":"","messages":[';
 
-foreach (explode("\n", $content) as $line) {
-	if ($line != explode("\n", $content)[0]) echo ",";
+for ($i = 0; $i < count(explode("\n", $content)); $i ++) {
+	$line = explode("\n", $content)[$i];
+	if ($i != 0) echo ",";
 	echo sprintf('"%s"', $line);
 }
 

@@ -2,6 +2,7 @@ import * as rapier from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat'
 import * as three from 'https://esm.sh/three'
 
 
+var global_name;
 
 rapier.init().then(async () => {
 	window.addEventListener("beforeunload", async () => {
@@ -56,6 +57,8 @@ rapier.init().then(async () => {
 
 	const name = (await n.json()).name;
 
+	global_name = name;
+
 	async function animate (){
 		otplayers.forEach(p => {
 			scene.remove(p)
@@ -94,7 +97,7 @@ rapier.init().then(async () => {
 			let py = players[i].y;
 			let pz = players[i].z;
 			let pn = players[i].name;
-			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0x00FF00}))
+			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:eval(players[i].color.split("#")[1])}))
 			newPlayer.position.set(px,py,pz)
 			scene.add(newPlayer)
 			
@@ -106,6 +109,7 @@ rapier.init().then(async () => {
 		//move.php sets your position (given name, x, y, and z), and returns the position of everybody else
 		//message.php sends a message (given name and message), and returns the messages
 		//getmessages.php returns the messages
+		
 		let vell = {x:0,y:vel.y,z:0};
 
 		if (keys.has('KeyA')) vell.x -= 5;
@@ -126,7 +130,22 @@ rapier.init().then(async () => {
 	requestAnimationFrame(animate)
 
 
-
-
-	
 })
+
+document.getElementById("csm").onkeydown = async (e) => {
+	if (e.key == "Enter") {
+		await fetch(`/message.php?name=${global_name}&message=${document.getElementById("csm").value}`)
+		document.getElementById("csm").value = "";
+	}
+}
+
+setInterval(async () => {
+	let messages = (await fetch(`/getmessages.php`));
+	messages = (await messages.json()).messages
+	document.getElementById("sent").innerHTML = "";
+	messages.forEach(message => {
+		document.getElementById("sent").innerText += message
+		document.getElementById("sent").innerHTML += "<br>";
+	});
+	
+}, 100)
