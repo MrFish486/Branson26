@@ -1,0 +1,53 @@
+:root {
+	--1: #eaa991;
+	--2: #ead591;
+	--3: #ea91a6;
+}
+
+* {
+	font-family: Helvetica;
+}
+
+body {
+	background-color: var(--1);
+}
+
+.footer {
+	position: absolute;
+	left: 10px;
+	bottom: 10px;
+	transition: 1s;
+}
+
+.footer:hover {
+	transform: rotate(360deg);
+}
+
+div.d {
+	border: 3px dashed black;
+	margin: 20px;
+	padding: 20px;
+	border-radius: 20px;
+	background-color: var(--2);
+}
+
+button {
+	padding-left: 10px;
+	padding-right: 10px;
+	border: 2px solid black;
+	background-color: var(--3);
+	font-size: 15px;
+}
+
+button:hover {
+	background-color: var(--1);
+}
+
+a.lab {
+	margin-bottom: 5px;
+}
+
+input[type=text] {
+	background-color: var(--2);
+	border: 2px solid black;
+}
