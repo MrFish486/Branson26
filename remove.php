@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-if ($_SERVER['REQUEST_METHOD'] != 'GET' || !isset($_GET['x']) || !isset($_GET['y']) || !isset($_GET['z']) || !isset($_GET['name'])) {
+if ($_SERVER['REQUEST_METHOD'] != 'GET' || !isset($_GET['name'])) {
 	echo '{"success":false,"reason":"Bad request"}';
 	exit;
 }
@@ -19,7 +19,6 @@ for ($i = 0; $i < count($content); $i ++) {
 	$line = $content[$i];
 	if (explode(",", $line)[0] == $username) {
 		$found = true;
-		$content[$i] = sprintf("%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z']);
 	} else if (count(explode(",", $line)) > 3) {
 		array_push($product, $line . (($i == count($content) - 1) ? "" : "\n"));
 	}
@@ -30,7 +29,7 @@ if (!$found) {
 	exit;
 }
 
-file_put_contents($users_index, implode("\n", $content));
+file_put_contents($users_index, implode("\n", $product));
 
 echo '{"success":true,"reason":"","users":[';
 
