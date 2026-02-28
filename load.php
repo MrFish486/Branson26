@@ -5,7 +5,9 @@
 	<body>
 		<div class="d">
 			<form method="POST" action="/join.php">
-				<a id="lab">Please input your username:</a><br><br><input name="username" type="text" placeholder="Username" required></input>
+				<a id="lab">Please input your username and your player color:</a><br><br>
+				<input name="username" type="text" placeholder="Username" required></input>
+				<input name="color" type="color"></input>
 				<button type="submit">Join</button>
 			</form>
 			<form method="GET" action="/">
