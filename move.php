@@ -19,9 +19,9 @@ for ($i = 0; $i < count($content); $i ++) {
 	$line = $content[$i];
 	if (explode(",", $line)[0] == $username) {
 		$found = true;
-		$content[$i] = sprintf("%s,%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z'], explode(",", $line)[4]);
+		$content[$i] = sprintf("%s,%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z'], isset(explode(",", $line)[4]) ? explode(",", $line)[4] : "#000000");
 	} else if (count(explode(",", $line)) > 4) {
-		array_push($product, $line . (($i == count($content) - 1) ? "" : "\n"));
+		array_push($product, $line);
 	}
 }
 

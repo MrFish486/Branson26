@@ -5,10 +5,9 @@ import * as three from 'https://esm.sh/three'
 var global_name;
 
 rapier.init().then(async () => {
-	document.getElementById("leave").onclick = async () => {
+	window.addEventListener("beforeunload", async () => {
 		await fetch(`/remove.php?name=${name}`);
-		window.location.href = "/";
-	};
+	})
 	let otplayers=[]
 	let jumpTime=true 
 	//init world, player
@@ -34,8 +33,10 @@ rapier.init().then(async () => {
 	camera.position.set(3, 3, 3)
 	
 	scene.add(light,Alight)
-	const textureLoader=new three.TextureLoader('assets/noai.png')
-	const groundMesh=new three.Mesh(new three.BoxGeometry(20,1,20))
+	const textureLoader=new three.TextureLoader()
+	const texture=textureLoader.load('assets/noai.png')
+	const mat=new three.MeshBasicMaterial({map:texture})
+	const groundMesh=new three.Mesh(new three.BoxGeometry(20,1,20),mat)
 	scene.add(groundMesh)
 
 	var keys=new Set()
@@ -92,15 +93,15 @@ rapier.init().then(async () => {
 		//if (!opp.success) window.location.href = "/invalid.php";
 
 		let players = dat.users;
-
-		if (players == undefined) console.log(dat, name);
+	
+		if (players == undefined) console.log(dat, name)
 
 		for (let i = 0; i < players.length; i ++) {
 			let px = players[i].x;
 			let py = players[i].y;
 			let pz = players[i].z;
 			let pn = players[i].name;
-			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:eval(players[i].color.split("#")[1])}))
+			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0xffffff}))
 			newPlayer.position.set(px,py,pz)
 			scene.add(newPlayer)
 			
