@@ -31,6 +31,11 @@ div.d {
 	background-color: var(--2);
 }
 
+div.j * {
+	vertical-align: top;
+	height: 25px;
+}
+
 button {
 	padding-left: 10px;
 	padding-right: 10px;
@@ -48,6 +53,11 @@ a.lab {
 }
 
 input[type=text] {
+	background-color: var(--2);
+	border: 2px solid black;
+}
+
+input[type=color] {
 	background-color: var(--2);
 	border: 2px solid black;
 }
