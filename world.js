@@ -5,9 +5,10 @@ import * as three from 'https://esm.sh/three'
 var global_name;
 
 rapier.init().then(async () => {
-	window.addEventListener("beforeunload", async () => {
+	document.getElementById("leave").onclick = async () => {
 		await fetch(`/remove.php?name=${name}`);
-	})
+		window.location.href = "/";
+	};
 	let otplayers=[]
 	let jumpTime=true 
 	//init world, player
@@ -91,6 +92,8 @@ rapier.init().then(async () => {
 		//if (!opp.success) window.location.href = "/invalid.php";
 
 		let players = dat.users;
+
+		if (players == undefined) console.log(dat, name);
 
 		for (let i = 0; i < players.length; i ++) {
 			let px = players[i].x;

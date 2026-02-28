@@ -19,8 +19,8 @@ for ($i = 0; $i < count($content); $i ++) {
 	$line = $content[$i];
 	if (explode(",", $line)[0] == $username) {
 		$found = true;
-		$content[$i] = sprintf("%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z']);
-	} else if (count(explode(",", $line)) > 3) {
+		$content[$i] = sprintf("%s,%s,%s,%s,%s", $username, $_GET['x'], $_GET['y'], $_GET['z'], explode(",", $line)[4]);
+	} else if (count(explode(",", $line)) > 4) {
 		array_push($product, $line . (($i == count($content) - 1) ? "" : "\n"));
 	}
 }
@@ -40,11 +40,11 @@ for ($i = 0; $i < count($product); $i ++) {
 	$line = $product[$i];
 	$dat = explode(",", $line);
 	error_log(sprintf("%d / %d", $i, count($product)));
-	if (count($dat) < 4) {
+	if (count($dat) < 5) {
 		$cc --;
 		continue;
 	}
-	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s}%s', $dat[0], $dat[1], $dat[2], $dat[3], ($i >= $cc) ? "" : ",");
+	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s,"color":"%s"}%s', $dat[0], $dat[1], $dat[2], $dat[3], $dat[4], ($i >= $cc) ? "" : ",");
 }
 
 echo ']}';
