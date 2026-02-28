@@ -59,7 +59,7 @@ rapier.init().then(async () => {
 		
 		let opp = await fetch(`/move.php?x=${pos.x}&y=${pos.y}&z=${pos.z}&name=${name}`);
 
-	let dat = await opp.json();
+		let dat = await opp.json();
 		
 		//if (!opp.success) window.location.href = "/invalid.php";
 

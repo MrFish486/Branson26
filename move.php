@@ -34,11 +34,14 @@ file_put_contents($users_index, implode("\n", $content));
 
 echo '{"success":true,"reason":"","users":[';
 
+$i = 1;
+
 foreach ($content as $line) {
 	$dat = explode(",", $line);
 	if (count($dat) < 4) break;
-	if ($line != $content[0]) echo ",";
-	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s}', $dat[0], $dat[1], $dat[2], $dat[3]);
+	$i ++;
+	error_log(sprintf("%d / %d", $i, count($content)));
+	echo sprintf('{"name":"%s","x":%s,"y":%s,"z":%s}%s', $dat[0], $dat[1], $dat[2], $dat[3], ($i == count($content)) ? "" : ",");
 }
 
 echo ']}';
