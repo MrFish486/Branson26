@@ -2,6 +2,8 @@ import * as rapier from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat'
 import * as three from 'https://esm.sh/three'
 import { OrbitControls } from 'https://esm.sh/three/addons/controls/OrbitControls.js'
 
+const SPEED = 1.5;
+
 var circlePoint = (theta, r) => {
 	const x = r * Math.cos(theta);
 	const y = r * Math.sin(theta);
@@ -88,12 +90,16 @@ rapier.init().then(async () => {
 	scene.add(groundMesh)
 
 	var keys=new Set()
-	window.addEventListener("keydown",(event)=>{
-		keys.add(event.code)
-	})
-	window.addEventListener("keyup",(event)=>{
-		keys.delete(event.code)
-	})
+        window.addEventListener("keydown",(event)=>{
+                if (event.target == document.getElementById("csm")) return true;
+                keys.add(event.code)
+                return false;
+        })  
+        window.addEventListener("keyup",(event)=>{
+                if (event.target == document.getElementById("csm")) return true;
+                keys.delete(event.code)
+                return false;
+        })
 	
 
 	let n = await fetch("/name.php");
@@ -120,6 +126,7 @@ rapier.init().then(async () => {
 		otplayers=[]
 		let pos= playerBody.translation()
 		let NCP = circlePoint(playerTheta, playerR);
+		let NCPorthagonal = circlePoint(playerTheta + (Math.PI / 2), playerR);
 		NCP.z = playerZ;
 		console.log(NCP);
 		camera.position.set(NCP.x + pos.x, NCP.z, NCP.y + pos.z);
@@ -176,11 +183,22 @@ rapier.init().then(async () => {
 		//getmessages.php returns the messages
 		
 		let vell = {x:0,y:vel.y,z:0};
-
-		if (keys.has('KeyA')) vell.x -= 5;
-		if (keys.has('KeyD')) vell.x += 5;
-		if (keys.has('KeyW')) vell.z -= 5;
-		if (keys.has('KeyS')) vell.z += 5;
+		if (keys.has('KeyA')) {
+			vell.x += (NCPorthagonal.x * SPEED);
+			vell.z += (NCPorthagonal.y * SPEED);
+		}
+		if (keys.has('KeyD')) {
+			vell.x -= (NCPorthagonal.x * SPEED);
+			vell.z -= (NCPorthagonal.y * SPEED);
+		}
+		if (keys.has('KeyW')) {
+			vell.x -= (NCP.x * SPEED);
+			vell.z -= (NCP.y * SPEED);
+		}
+		if (keys.has('KeyS')) {
+			vell.x += (NCP.x * SPEED);
+			vell.z += (NCP.y * SPEED);
+		}
 		
 		playerBody.setLinvel({x:vell.x,y:vell.y,z:vell.z},true)
 		if (pos.y<-5) playerBody.setTranslation({x:0,y:10,z:0})
