@@ -34,7 +34,7 @@ file_put_contents($users_index, implode("\n", $content));
 
 echo '{"success":true,"reason":"","users":[';
 
-$cc = count($product) - 2;
+$cc = count($product) - 1;
 
 for ($i = 0; $i < count($product); $i ++) {
 	$line = $product[$i];
