@@ -3,6 +3,7 @@ session_start();
 ?>
 <html>
 	<head>
+		<title><?php include("include/name.php") ?></title>
 		<link href="/styles/main.css" rel="stylesheet"></link>
 	</head>
 	<body>

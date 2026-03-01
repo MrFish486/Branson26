@@ -16,13 +16,14 @@ body {
 	position: absolute;
 	left: 10px;
 	bottom: 10px;
-	transition: 0.7s;
+	transition: 0s;
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;
 }
 
 .footer:hover {
 	transform: rotate(360deg);
+	transition: 0.7s;
 }
 
 div.d {

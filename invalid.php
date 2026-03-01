@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title><?php include("include/name.php") ?> - error</title>
 		<link href="/styles/main.css" rel="stylesheet"></link>
 	</head>
 	<body>
