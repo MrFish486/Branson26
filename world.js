@@ -1,5 +1,6 @@
 import * as rapier from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat'
 import * as three from 'https://esm.sh/three'
+import { OrbitControls } from 'https://esm.sh/three/addons/controls/OrbitControls.js'
 
 
 var global_name;
@@ -11,35 +12,10 @@ rapier.init().then(async () => {
 	let otplayers=[]
 	let jumpTime=true 
 	//init world, player
+	const canvas=document.getElementById("canvas")
 	const world = new rapier.World({x:0,y:-9.81,z:0})
 	const ground=rapier.ColliderDesc.cuboid(20,2,20)
 	world.createCollider(ground)
-	
-	const wall1=rapier.ColliderDesc.cuboid(20,10,1)
-	wall1.setTranslation(0,0,20)
-
-	const wall2=rapier.ColliderDesc.cuboid(20,10,1)
-	wall2.setTranslation(0,0,-20)
-
-	const wall3=rapier.ColliderDesc.cuboid(1,10,20)
-	wall3.setTranslation(-20,0,0)
-
-	const wall4=rapier.ColliderDesc.cuboid(1,10,20)
-	wall4.setTranslation(20,0,0)
-
-	world.createCollider(wall1)
-	world.createCollider(wall2)
-	world.createCollider(wall3)
-	world.createCollider(wall4)
-	
-	const playerDesc= rapier.RigidBodyDesc.dynamic()
-	playerDesc.setTranslation(0,10,0)
-	const playerBody= world.createRigidBody(playerDesc)
-	const colliderDesc= rapier.ColliderDesc.capsule(1,1)
-	world.createCollider(colliderDesc,playerBody)
-	
-	const canvas=document.getElementById("canvas")
-
 	const scene=new three.Scene()
 	const renderer=new three.WebGLRenderer({antialais:true,canvas:canvas})
 	renderer.setSize(canvas.clientWidth,canvas.clientHeight,false)
@@ -48,9 +24,56 @@ rapier.init().then(async () => {
 	light.position.set(0,20,5)
 	const Alight = new three.AmbientLight(0x404040, 5)
 	camera.position.set(3, 3, 3)
-	
+
 	scene.add(light,Alight)
 	const textureLoader=new three.TextureLoader()
+	const wallTexture=textureLoader.load('/assets/wall.png')
+	const wall=new three.MeshBasicMaterial({map:wallTexture})
+
+	const wall1=rapier.ColliderDesc.cuboid(20,10,2)
+	wall1.setTranslation(0,10,20)
+
+	const wall1Geo=new three.BoxGeometry(40,20,4)
+	const wall1Mesh=new three.Mesh(wall1Geo,wall)
+	wall1Mesh.position.set(0,10,20)
+	
+
+	const wall2=rapier.ColliderDesc.cuboid(20,10,2)
+	wall2.setTranslation(0,10,-20)
+	
+	const wall2Geo=new three.BoxGeometry(40,20,4)
+	const wall2Mesh=new three.Mesh(wall2Geo,wall)
+	wall2Mesh.position.set(0,10,-20)
+
+	const wall3=rapier.ColliderDesc.cuboid(2,10,20)
+	wall3.setTranslation(-20,10,0)
+
+	const wall3Geo=new three.BoxGeometry(4,20,40)
+	const wall3Mesh=new three.Mesh(wall3Geo,wall)
+	wall3Mesh.position.set(-20,10,0)
+
+	const wall4=rapier.ColliderDesc.cuboid(2,10,20)
+	wall4.setTranslation(20,10,0)
+
+	const wall4Geo=new three.BoxGeometry(4,20,40)
+	const wall4Mesh=new three.Mesh(wall4Geo,wall)
+	wall4Mesh.position.set(20,10,0)
+
+	world.createCollider(wall1)
+	world.createCollider(wall2)
+	world.createCollider(wall3)
+	world.createCollider(wall4)
+	scene.add(wall1Mesh,wall2Mesh,wall3Mesh,wall4Mesh)
+	const playerDesc= rapier.RigidBodyDesc.dynamic()
+	playerDesc.setTranslation(0,10,0)
+	const playerBody= world.createRigidBody(playerDesc)
+	const colliderDesc= rapier.ColliderDesc.capsule(1,1)
+	world.createCollider(colliderDesc,playerBody)
+	
+	
+
+	
+	
 	const texture=textureLoader.load('/assets/floor.png')
 	const mat=new three.MeshBasicMaterial({map:texture})
 	const groundMesh=new three.Mesh(new three.BoxGeometry(40,1,40),mat)
@@ -68,6 +91,7 @@ rapier.init().then(async () => {
 	const playerMesh=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0x00FF00}))
 	camera.lookAt(playerMesh.position.x,playerMesh.position.y,playerMesh.position.z)
 	scene.add(playerMesh)
+
 	renderer.render(scene, camera) 
 	
 	setInterval(()=>{world.step()},16)
@@ -84,21 +108,9 @@ rapier.init().then(async () => {
 		})
 		otplayers=[]
 		let pos= playerBody.translation()
-		let rayStart= { x: pos.x, y: pos.y, z: pos.z }
-		rayStart.y-=1
-		let ray= new rapier.Ray(rayStart,{ x: 0, y: -1, z: 0 })
-		let hit= world.castRay(ray,0.05,true,undefined,undefined,playerBody)
-		console.log(hit)
-		if (keys.has('Space')&&hit){
+		if (keys.has('Space')&&playerBody.linvel().y>=-0.05&&playerBody.linvel().y<=0.05){
                 playerBody.setLinvel({x:0,y:10,z:-4},true)
-                jumpTime=false
-                let q=setInterval(()=>{
-                    if (playerBody.linvel().y<=0){
-                        clearInterval(q)
-                        jumpTime=true
-
-                    }
-                },1)
+                
                 
         }
 		let vel=playerBody.linvel()
