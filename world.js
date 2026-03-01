@@ -16,7 +16,7 @@ rapier.init().then(async () => {
 	}
 	let otplayers=[]
 	let jumpTime=true
-	let playerTheta = 0;
+	let playerTheta = Math.PI * 0.5;
 	let playerR = 3;
 	let playerZ = 5;
 	//init world, player
@@ -122,7 +122,7 @@ rapier.init().then(async () => {
 		let NCP = circlePoint(playerTheta, playerR);
 		NCP.z = playerZ;
 		console.log(NCP);
-		camera.position.set(NCP.x, NCP.z, NCP.y);
+		camera.position.set(NCP.x + pos.x, NCP.z, NCP.y + pos.z);
 		if (keys.has('Space')&&playerBody.linvel().y>=-0.05&&playerBody.linvel().y<=0.05){
                 	playerBody.setLinvel({x:0,y:10,z:-4},true)
 	        }
