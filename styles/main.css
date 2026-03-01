@@ -17,6 +17,8 @@ body {
 	left: 10px;
 	bottom: 10px;
 	transition: 0.7s;
+	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
 }
 
 .footer:hover {
