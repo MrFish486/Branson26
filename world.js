@@ -2,15 +2,23 @@ import * as rapier from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat'
 import * as three from 'https://esm.sh/three'
 import { OrbitControls } from 'https://esm.sh/three/addons/controls/OrbitControls.js'
 
+var circlePoint = (theta, r) => {
+	const x = r * Math.cos(theta);
+	const y = r * Math.sin(theta);
+	return {x : x, y : y};
+}
 
 var global_name;
 
 rapier.init().then(async () => {
-	window.addEventListener("beforeunload", async () => {
+	document.getElementById("leave").onclick = async () => {
 		await fetch(`/remove.php?name=${name}`);
-	})
+	}
 	let otplayers=[]
-	let jumpTime=true 
+	let jumpTime=true
+	let playerTheta = 0;
+	let playerR = 3;
+	let playerZ = 5;
 	//init world, player
 	const canvas=document.getElementById("canvas")
 	const world = new rapier.World({x:0,y:-9.81,z:0})
@@ -87,8 +95,17 @@ rapier.init().then(async () => {
 		keys.delete(event.code)
 	})
 	
+
+	let n = await fetch("/name.php");
+
+	let n_ = (await n.json());
+	const name = n_.name;
+	const ownCol = n_.color;
+
+	global_name = name;
+
 	const playerGeo=new three.CapsuleGeometry(1,2,30,30,1)
-	const playerMesh=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0x00FF00}))
+	const playerMesh=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:new three.Color(ownCol)}))
 	camera.lookAt(playerMesh.position.x,playerMesh.position.y,playerMesh.position.z)
 	scene.add(playerMesh)
 
@@ -96,23 +113,37 @@ rapier.init().then(async () => {
 	
 	setInterval(()=>{world.step()},16)
 
-	let n = await fetch("/name.php");
-
-	const name = (await n.json()).name;
-
-	global_name = name;
-
 	async function animate (){
 		otplayers.forEach(p => {
 			scene.remove(p)
 		})
 		otplayers=[]
 		let pos= playerBody.translation()
+		let NCP = circlePoint(playerTheta, playerR);
+		NCP.z = playerZ;
+		console.log(NCP);
+		camera.position.set(NCP.x, NCP.z, NCP.y);
 		if (keys.has('Space')&&playerBody.linvel().y>=-0.05&&playerBody.linvel().y<=0.05){
-                playerBody.setLinvel({x:0,y:10,z:-4},true)
-                
-                
-        }
+                	playerBody.setLinvel({x:0,y:10,z:-4},true)
+	        }
+		if (keys.has('ArrowLeft')) {
+			playerTheta = (playerTheta + 0.03)
+		}
+		if (keys.has('ArrowRight')) {
+			playerTheta = (playerTheta - 0.03)
+		}
+		if (keys.has('Period')) {
+			playerR = (playerR + 0.03)
+		}
+		if (keys.has('Comma')) {
+			playerR = (playerR - 0.03)
+		}
+		if (keys.has('ArrowUp')) {
+			playerZ = (playerZ + 0.1)
+		}
+		if (keys.has('ArrowDown')) {
+			playerZ = (playerZ - 0.1)
+		}
 		let vel=playerBody.linvel()
 		playerMesh.position.set(pos.x,pos.y,pos.z)
 		
@@ -132,12 +163,11 @@ rapier.init().then(async () => {
 			let py = players[i].y;
 			let pz = players[i].z;
 			let pn = players[i].name;
-			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:0xffffff}))
+			let newPlayer=new three.Mesh(playerGeo,new three.MeshPhongMaterial({color:new three.Color(players[i].color)}))
 			newPlayer.position.set(px,py,pz)
 			scene.add(newPlayer)
 			
 			otplayers.push(newPlayer)
-			console.log(pn);
 		}
 
 		//name.php returns own name
@@ -158,7 +188,7 @@ rapier.init().then(async () => {
 		
 		requestAnimationFrame(animate)
 		//write player code above this request
-		camera.position.set(pos.x, pos.y + 2, pos.z + 3)
+		//camera.position.set(pos.x, pos.y + 2, pos.z + 3)
 		camera.lookAt(pos.x, pos.y, pos.z)
 		renderer.render(scene, camera)
 	}

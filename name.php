@@ -5,6 +5,7 @@ if (!isset($_SESSION['name'])) {
 	echo '{"success":false,"name":""}';
 } else {
 	$n = $_SESSION['name'];
-	echo "{\"success\":true,\"name\":\"$n\"}";
+	$c = $_SESSION['color'];
+	echo "{\"success\":true,\"name\":\"$n\",\"color\":\"$c\"}";
 }
 ?>
