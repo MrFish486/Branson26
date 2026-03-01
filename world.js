@@ -10,7 +10,11 @@ var circlePoint = (theta, r) => {
 	return {x : x, y : y};
 }
 
+var players_assoc;
+
 var global_name;
+
+var global_color;
 
 rapier.init().then(async () => {
 	document.getElementById("leave").onclick = async () => {
@@ -107,6 +111,8 @@ rapier.init().then(async () => {
 	let n_ = (await n.json());
 	const name = n_.name;
 	const ownCol = n_.color;
+	
+	global_color = ownCol;
 
 	global_name = name;
 
@@ -128,7 +134,6 @@ rapier.init().then(async () => {
 		let NCP = circlePoint(playerTheta, playerR);
 		let NCPorthagonal = circlePoint(playerTheta + (Math.PI / 2), playerR);
 		NCP.z = playerZ;
-		console.log(NCP);
 		camera.position.set(NCP.x + pos.x, NCP.z, NCP.y + pos.z);
 		if (keys.has('Space')&&playerBody.linvel().y>=-0.05&&playerBody.linvel().y<=0.05){
                 	playerBody.setLinvel({x:0,y:10,z:-4},true)
@@ -165,7 +170,10 @@ rapier.init().then(async () => {
 		if (!dat.success || players == undefined) window.location.href = "/invalid.php";
 
 
+		players_assoc = [];
 		for (let i = 0; i < players.length; i ++) {
+			console.log(players[i].color);
+			players_assoc.push({name : players[i].name, color : players[i].color});
 			let px = players[i].x;
 			let py = players[i].y;
 			let pz = players[i].z;
@@ -227,8 +235,23 @@ setInterval(async () => {
 	messages = (await messages.json()).messages
 	document.getElementById("sent").innerHTML = "";
 	messages.forEach(message => {
-		document.getElementById("sent").innerText += message
-		document.getElementById("sent").innerHTML += "<br>";
+		let f = true;
+		for (let i = 0; i < players_assoc.length; i ++) {
+			if (message.includes("[") && message.includes("]") && message.split("[")[1].split("]")[0] == players_assoc[i].name) {
+				f = false;
+				document.getElementById("sent").innerHTML += `<a style="color:${players_assoc[i].color};">${message}</a>`;
+				document.getElementById("sent").innerHTML += "<br>";
+			}
+		}
+		if (f) {
+			if (message.includes("[") && message.includes("]") && message.split("[")[1].split("]")[0] == global_name) {
+				document.getElementById("sent").innerHTML += `<a style="color:${global_color};">${message}</a>`;
+				document.getElementById("sent").innerHTML += "<br>";
+			} else {
+				document.getElementById("sent").innerHTML += `<a style="color:black">${message}</a>`;
+				document.getElementById("sent").innerHTML += "<br>";
+			}
+		}
 	});
 	
 }, 100)
